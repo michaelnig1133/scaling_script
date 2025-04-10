@@ -22,28 +22,37 @@ pipeline {
             }
         }
 
-        
+        stage('build) {
+              steps{
+                  script {
+                      sh '''
+                        echo "Building Docker image..."
+                        docker compose build
+                      '''
+                  }
+              }
+        }
 
       
        
-        stage('Build and Push Docker Image') {
-            steps {
-                script {
-                    withDockerRegistry([credentialsId: env.DOCKER_CREDENTIALS, url: 'https://index.docker.io/v1/']) {
-                        sh '''#!/bin/bash
-                            echo "Building Docker image..."
-                            docker compose build
+        // stage('Build and Push Docker Image') {
+        //     steps {
+        //         script {
+        //             withDockerRegistry([credentialsId: env.DOCKER_CREDENTIALS, url: 'https://index.docker.io/v1/']) {
+        //                 sh '''#!/bin/bash
+        //                     echo "Building Docker image..."
+        //                     docker compose build
 
-                            // echo "Tagging image..."
-                            // docker tag scalling $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+        //                     // echo "Tagging image..."
+        //                     // docker tag scalling $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
-                            // echo "Pushing image to Docker Hub..."
-                            // docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
-                        '''
-                    }
-                }
-            }
-        }
+        //                     // echo "Pushing image to Docker Hub..."
+        //                     // docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
 
         // stage('Deploy Application') {
         //     steps {
