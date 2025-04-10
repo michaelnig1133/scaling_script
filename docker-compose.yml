@@ -4,9 +4,9 @@ services:
   # Autoscaler Service (Runs the scaling script)
   autoscaler:
     build: ./autoscaler  # Dockerfile for the autoscaler
-    depends_on:
-      - prometheus
-      - app
+    # depends_on:
+    #   - prometheus
+    #   - app
     
     restart: always
 
