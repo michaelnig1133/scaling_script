@@ -27,7 +27,9 @@ pipeline {
                   script {
                       sh ''' #!/bin/bash
                         echo "Building Docker image..."
+                        export COMPOSE_BAKE=true
                         docker compose up -d
+
                       '''
                   }
               }
