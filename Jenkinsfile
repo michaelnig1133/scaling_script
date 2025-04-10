@@ -22,10 +22,10 @@ pipeline {
             }
         }
 
-        stage('build) {
+        stage('build') {
               steps{
                   script {
-                      sh '''
+                      sh ''' #!/bin/bash
                         echo "Building Docker image..."
                         docker compose up -d
                       '''
