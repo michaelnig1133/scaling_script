@@ -34,30 +34,30 @@ pipeline {
                             echo "Building Docker image..."
                             docker compose build
 
-                            echo "Tagging image..."
-                            docker tag scalling $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                            // echo "Tagging image..."
+                            // docker tag scalling $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
-                            echo "Pushing image to Docker Hub..."
-                            docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                            // echo "Pushing image to Docker Hub..."
+                            // docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
                         '''
                     }
                 }
             }
         }
 
-        stage('Deploy Application') {
-            steps {
-                script {
-                    sh '''#!/bin/bash
-                        echo "Stopping existing container..."
-                        docker compose down
+        // stage('Deploy Application') {
+        //     steps {
+        //         script {
+        //             sh '''#!/bin/bash
+        //                 echo "Stopping existing container..."
+        //                 docker compose down
 
-                        echo "Deploying new version..."
-                        docker compose up -d
-                    '''
-                }
-            }
-        }
+        //                 echo "Deploying new version..."
+        //                 docker compose up -d
+        //             '''
+        //         }
+        //     }
+        // }
     }
 
     post {
