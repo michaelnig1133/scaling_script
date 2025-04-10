@@ -27,7 +27,7 @@ pipeline {
                   script {
                       sh '''
                         echo "Building Docker image..."
-                        docker compose build
+                        docker compose up -d
                       '''
                   }
               }
