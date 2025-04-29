@@ -2,54 +2,42 @@ import requests
 import os
 import time
 
-# Prometheus config
-PROMETHEUS_URL = "http://localhost:9090"
+# Prometheus query
+QUERY = 'rate(container_cpu_usage_seconds_total{name="your_container_name"}[1m])'
+PROMETHEUS_URL = "http://prometheus:9090"  # or "http://localhost:9090" if exposed
 
-# Container thresholds
-CONFIG = {
-    "gatepassapp-container": {
-        "cpu_limit": 1.0,      # Matches compose.yml
-        "max_threshold": 0.5,  # Scale up at 50% CPU
-        "min_threshold": 0.1,  # Scale down at 10% CPU
-        "max_replicas": 3,     # Maximum replicas
-        "compose_service": "gatepass-app"  # Service name in compose.yml
-    }
-}
+# Thresholds
+MAX_CPU_THRESHOLD = 0.5
+MIN_CPU_THRESHOLD = 0.1
 
-def get_cpu_usage(container_name, cpu_limit):
-    query = f'rate(container_cpu_usage_seconds_total{{name="{container_name}"}}[1m]) / {cpu_limit}'
+# Polling interval in seconds
+POLL_INTERVAL = 60  # 1 minute
+
+def get_cpu_usage():
     try:
-        res = requests.get(f"{PROMETHEUS_URL}/api/v1/query", params={"query": query})
+        res = requests.get(f"{PROMETHEUS_URL}/api/v1/query", params={"query": QUERY})
         data = res.json()
         if data['data']['result']:
             return float(data['data']['result'][0]['value'][1])
     except Exception as e:
-        print(f"Error fetching CPU for {container_name}: {e}")
+        print(f"Error fetching CPU usage: {e}")
     return 0.0
 
-def scale_service(service_name, desired_count):
-    print(f"[{time.ctime()}] Scaling {service_name} to {desired_count} replicas")
-    os.system(f"docker-compose up -d --scale {service_name}={desired_count}")
+def scale_service(scale_to):
+    print(f"Scaling service to {scale_to} replicas")
+    os.system(f"docker service scale your_service_name={scale_to}")
 
 def monitor_and_scale():
     while True:
-        for container, config in CONFIG.items():
-            cpu = get_cpu_usage(container, config["cpu_limit"])
-            print(f"[{time.ctime()}] {container} CPU: {cpu:.2f}/{config['max_threshold']}")
+        cpu = get_cpu_usage()
+        print(f"[Monitor] CPU usage: {cpu}")
 
-            current_replicas = len(os.popen(
-                f'docker ps -q --filter "name={config["compose_service"]}"'
-            ).read().splitlines())
+        if cpu > MAX_CPU_THRESHOLD:
+            scale_service(5)
+        elif cpu < MIN_CPU_THRESHOLD:
+            scale_service(1)
 
-            # Scale up if CPU exceeds threshold and not at max replicas
-            if cpu > config["max_threshold"] and current_replicas < config["max_replicas"]:
-                scale_service(config["compose_service"], config["max_replicas"])
-
-            # Scale down if CPU is low and more than 1 replica exists
-            elif cpu < config["min_threshold"] and current_replicas > 1:
-                scale_service(config["compose_service"], 1)
-
-        time.sleep(60)
+        time.sleep(POLL_INTERVAL)
 
 if __name__ == "__main__":
     monitor_and_scale()
