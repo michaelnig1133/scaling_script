@@ -3,8 +3,8 @@ import os
 import time
 
 # Prometheus query
-QUERY = 'rate(container_cpu_usage_seconds_total{name="your_container_name"}[1m])'
-PROMETHEUS_URL = "http://prometheus:9090"  # or "http://localhost:9090" if exposed
+QUERY = 'rate(container_cpu_usage_seconds_total{name="gatepassapp-container"}[1m])'
+PROMETHEUS_URL = "http://prometheus:9900"  # or "http://localhost:9900" if exposed
 
 # Thresholds
 MAX_CPU_THRESHOLD = 0.5
