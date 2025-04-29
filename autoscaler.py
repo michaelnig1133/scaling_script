@@ -25,7 +25,7 @@ def get_cpu_usage():
 
 def scale_service(scale_to):
     print(f"Scaling service to {scale_to} replicas")
-    os.system(f"docker service scale your_service_name={scale_to}")
+    os.system(f"docker service scale gate_new={scale_to}")
 
 def monitor_and_scale():
     while True:
@@ -33,7 +33,7 @@ def monitor_and_scale():
         print(f"[Monitor] CPU usage: {cpu}")
 
         if cpu > MAX_CPU_THRESHOLD:
-            scale_service(5)
+            scale_service(2)
         elif cpu < MIN_CPU_THRESHOLD:
             scale_service(1)
 
